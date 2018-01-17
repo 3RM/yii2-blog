@@ -80,9 +80,26 @@ class Article extends \yii\db\ActiveRecord
         return $this->hasMany(Comment::className(), ['article_id' => 'id']);
     }
 
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getCategory()
+    {
+        return $this->hasOne(Category::className(), ['id' => 'category_id']);
+    }
+
     public function saveImage($filename){
         $this->image = $filename;
         return $this->save(false);
+    }
+
+    public function saveCategory($category_id)
+    {
+        $category = Category::findOne($category_id);
+        if($category != null){
+            $this->link('category', $category);
+            return true;
+        }
     }
 
     public function getImage()
