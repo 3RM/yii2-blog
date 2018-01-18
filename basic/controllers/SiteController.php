@@ -3,12 +3,15 @@
 namespace app\controllers;
 
 use Yii;
+use app\models\Article;
+use app\models\Category;
 use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\web\Response;
 use yii\filters\VerbFilter;
 use app\models\LoginForm;
 use app\models\ContactForm;
+use yii\data\Pagination;
 
 class SiteController extends Controller
 {
@@ -61,7 +64,48 @@ class SiteController extends Controller
      */
     public function actionIndex()
     {
-        return $this->render('index');
+        $data = Article::getAll(2);
+
+        $popular = Article::getPopular();
+        $recent = Article::getRecent();
+        $categories = Category::getAll();
+
+        return $this->render('index', [
+            'articles' => $data['articles'],
+            'pagination' => $data['pagination'],
+            'popular' => $popular,
+            'recent' => $recent,
+            'categories' => $categories
+        ]);
+    }
+
+    public function actionView($id)
+    {
+        $article = Article::findOne($id);
+
+        $popular = Article::getPopular();
+        $recent = Article::getRecent();
+        $categories = Category::getAll();
+
+        return $this->render('single', compact('article', 'popular', 'recent', 'categories'));
+    }
+
+    public function actionCategory($id)
+    {
+
+        $data = Article::getArticlesByCategory($id, 1);
+
+        $popular = Article::getPopular();
+        $recent = Article::getRecent();
+        $categories = Category::getAll();
+
+        return $this->render('category',[
+            'articles' => $data['articles'],
+            'pagination' => $data['pagination'],
+            'popular' => $popular,
+            'recent' => $recent,
+            'categories' => $categories
+        ]);
     }
 
     /**

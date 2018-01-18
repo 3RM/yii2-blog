@@ -5,6 +5,7 @@ namespace app\modules\admin\controllers;
 use Yii;
 use app\models\Article;
 use app\models\Category;
+use app\models\Tag;
 use app\models\ArticleSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
@@ -163,5 +164,21 @@ class ArticleController extends Controller
         }
 
         return $this->render('category', compact('article','selectedCategory', 'categories'));
+    }
+
+    public function actionSetTags($id)
+    {
+        $article = $this->findModel($id);
+        $selectedTags = $article->getSelectedTags();
+        
+        $tags = ArrayHelper::map(Tag::find()->all(), 'id', 'title');
+
+        if(Yii::$app->request->isPost){
+            $tags = Yii::$app->request->post('tags');
+            $article->saveTags($tags);
+            return $this->redirect(['view', 'id'=>$article->id]);
+        }
+
+        return $this->render('tags', compact('article', 'selectedTags', 'tags'));
     }
 }
